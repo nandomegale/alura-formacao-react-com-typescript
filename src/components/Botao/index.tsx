@@ -1,12 +1,27 @@
 import React from "react";
 import style from "./Botao.module.scss";
 
-// class Botao extends React.Component<{ texto: string }> {
-class Botao extends React.Component<{
-  children: string;
+interface Props {
+  children?: React.ReactNode;
   type?: "button" | "submit" | "reset" | undefined;
-}> {
-  render() {
+  onClick?: () => void;
+}
+
+export default function Botao({ children, type = "button", onClick }: Props) {
+  return (
+    <button onClick={onClick} type={type} className={style.botao}>
+      {children}
+    </button>
+  );
+}
+
+// class Botao extends React.Component<{ texto: string }> {
+// class Botao1 extends React.Component<{
+//   children: string;
+//   type?: "button" | "submit" | "reset" | undefined;
+//   onClick?: () => void;
+// }> {
+//   render() {
     // const backgroundColor = "red";
     // const estaAtivo = true;
     // const styles = {
@@ -21,13 +36,13 @@ class Botao extends React.Component<{
 
     //return <button className={style.botao}>{this.props.texto}</button>;
 
-    const { type = "button" } = this.props;
-    return (
-      <button type={type} className={style.botao}>
-        {this.props.children}
-      </button>
-    );
-  }
-}
+//     const { type = "button", onClick } = this.props;
+//     return (
+//       <button onClick={onClick} type={type} className={style.botao}>
+//         {this.props.children}
+//       </button>
+//     );
+//   }
+// }
 
-export default Botao;
+// export default Botao;
