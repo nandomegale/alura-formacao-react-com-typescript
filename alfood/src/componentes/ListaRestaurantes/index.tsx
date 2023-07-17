@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import IRestaurante from "../../interfaces/IRestaurante";
 import style from "./ListaRestaurantes.module.scss";
 import Restaurante from "./Restaurante";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { IPaginacao } from "../../interfaces/IPaginacao";
+
+interface IParametrosBusca {
+  ordering?: string;
+  search?: string;
+}
 
 const ListaRestaurantes = () => {
   // const restaurantes: IRestaurante[] = [
@@ -101,12 +106,13 @@ const ListaRestaurantes = () => {
 
   const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([]);
   const [proximaPagina, setProximaPagina] = useState("");
+  const [busca, setBusca] = useState("");
 
-  useEffect(() => {
-    //obter restaurantes
+  const carregarDados = (opcoes: AxiosRequestConfig = {}) => {
     axios
       .get<IPaginacao<IRestaurante>>(
-        "http://localhost:8000/api/v1/restaurantes/"
+        "http://localhost:8000/api/v1/restaurantes/",
+        opcoes
       )
       .then((resposta) => {
         setRestaurantes(resposta.data.results);
@@ -115,7 +121,22 @@ const ListaRestaurantes = () => {
       .catch((erro) => {
         console.log(erro);
       });
+  };
+
+  useEffect(() => {
+    carregarDados();
   }, []);
+
+  const buscar = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const opcoes = {
+      params: {} as IParametrosBusca,
+    };
+    if (busca) {
+      opcoes.params.search = busca;
+    }
+    carregarDados(opcoes);
+  };
 
   const verMais = () => {
     axios
@@ -134,6 +155,14 @@ const ListaRestaurantes = () => {
       <h1>
         Os restaurantes mais <em>bacanas</em>!
       </h1>
+      <form onSubmit={buscar}>
+        <input
+          type="text"
+          value={busca}
+          onChange={(event) => setBusca(event.target.value)}
+        />
+        <button type="submit">Buscar</button>
+      </form>
       {restaurantes?.map((item) => (
         <Restaurante restaurante={item} key={item.id} />
       ))}
