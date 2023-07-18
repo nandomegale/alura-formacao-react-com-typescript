@@ -1,9 +1,18 @@
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import axios, { AxiosRequestConfig } from "axios";
 import { useEffect, useState } from "react";
+import { IPaginacao } from "../../interfaces/IPaginacao";
 import IRestaurante from "../../interfaces/IRestaurante";
 import style from "./ListaRestaurantes.module.scss";
 import Restaurante from "./Restaurante";
-import axios, { AxiosRequestConfig } from "axios";
-import { IPaginacao } from "../../interfaces/IPaginacao";
 
 interface IParametrosBusca {
   ordering?: string;
@@ -107,6 +116,7 @@ const ListaRestaurantes = () => {
   const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([]);
   const [proximaPagina, setProximaPagina] = useState("");
   const [busca, setBusca] = useState("");
+  const [ordenacao, setOrdenacao] = useState("");
 
   const carregarDados = (opcoes: AxiosRequestConfig = {}) => {
     axios
@@ -135,6 +145,9 @@ const ListaRestaurantes = () => {
     if (busca) {
       opcoes.params.search = busca;
     }
+    if (ordenacao) {
+      opcoes.params.ordering = ordenacao;
+    }
     carregarDados(opcoes);
   };
 
@@ -155,14 +168,36 @@ const ListaRestaurantes = () => {
       <h1>
         Os restaurantes mais <em>bacanas</em>!
       </h1>
-      <form onSubmit={buscar}>
-        <input
-          type="text"
+      <Box component="form" onSubmit={buscar} sx={{ display: "flex" }}>
+        <TextField
+          label="Buscar"
+          variant="standard"
           value={busca}
           onChange={(event) => setBusca(event.target.value)}
         />
-        <button type="submit">Buscar</button>
-      </form>
+        <FormControl
+          variant="standard"
+          sx={{ width: "120px", marginLeft: "10px" }}
+        >
+          <InputLabel id="ordenarPor">Ordenar por</InputLabel>
+          <Select
+            id="ordenarPor"
+            value={ordenacao}
+            onChange={(event) => setOrdenacao(event.target.value)}
+            label="Ordenar por"
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={"id"}>id</MenuItem>
+            <MenuItem value={"nome"}>nome</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Button type="submit" variant="outlined" sx={{ marginLeft: "10px" }}>
+          Buscar
+        </Button>
+      </Box>
       {restaurantes?.map((item) => (
         <Restaurante restaurante={item} key={item.id} />
       ))}

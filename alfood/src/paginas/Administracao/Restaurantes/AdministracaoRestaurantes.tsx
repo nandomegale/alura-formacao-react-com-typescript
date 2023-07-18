@@ -8,33 +8,27 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import http from "../../../http/http";
 import IRestaurante from "../../../interfaces/IRestaurante";
 
 const AdministracaoRestaurantes = () => {
   const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([]);
 
   useEffect(() => {
-    axios
-      .get<IRestaurante[]>("http://localhost:8000/api/v2/restaurantes/")
-      .then((resposta) => {
-        setRestaurantes(resposta.data);
-      });
+    http.get<IRestaurante[]>("restaurantes/").then((resposta) => {
+      setRestaurantes(resposta.data);
+    });
   }, []);
 
   const excluir = (restauranteParaExcluir: IRestaurante) => {
-    axios
-      .delete(
-        `http://localhost:8000/api/v2/restaurantes/${restauranteParaExcluir.id}/`
-      )
-      .then(() => {
-        const listaRestaurante = restaurantes.filter(
-          (restaurante) => restaurante.id !== restauranteParaExcluir.id
-        );
-        setRestaurantes([...listaRestaurante]);
-      });
+    http.delete(`restaurantes/${restauranteParaExcluir.id}/`).then(() => {
+      const listaRestaurante = restaurantes.filter(
+        (restaurante) => restaurante.id !== restauranteParaExcluir.id
+      );
+      setRestaurantes([...listaRestaurante]);
+    });
   };
 
   return (
@@ -49,8 +43,8 @@ const AdministracaoRestaurantes = () => {
         </TableHead>
 
         <TableBody>
-          {restaurantes?.map((restaurante) => (
-            <TableRow>
+          {restaurantes?.map((restaurante, index) => (
+            <TableRow key={index}>
               <TableCell>{restaurante.nome}</TableCell>
               <TableCell>
                 [{" "}
