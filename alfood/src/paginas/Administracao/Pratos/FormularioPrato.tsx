@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 import http from "../../../http/http";
 import ITag from "../../../interfaces/ITag";
 import IRestaurante from "../../../interfaces/IRestaurante";
+import { useParams } from "react-router-dom";
+import IPrato from "../../../interfaces/IPrato";
 
 const FormularioPrato = () => {
   const [nomePrato, setNomePrato] = useState("");
@@ -23,6 +25,7 @@ const FormularioPrato = () => {
   const [restaurantes, setRestaurantes] = useState<IRestaurante[]>([]);
   const [restaurante, setRestaurante] = useState("");
   const [imagem, setImagem] = useState<File | null>(null);
+  const parametros = useParams();
 
   const selecionarArquivo = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.length) {
@@ -41,6 +44,20 @@ const FormularioPrato = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (parametros.id) {
+      http
+        .get<IPrato>(`/pratos/${parametros.id}/`)
+        .then((resposta) => {
+          setNomePrato(resposta.data.nome);
+          setDescricao(resposta.data.descricao);
+          setTag(resposta.data.tag);
+          setRestaurante(String(resposta.data.restaurante));
+        })
+        .catch((erro) => console.log(erro));
+    }
+  }, [parametros]);
+
   const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData();
@@ -55,8 +72,8 @@ const FormularioPrato = () => {
 
     http
       .request({
-        url: "pratos/",
-        method: "POST",
+        url: parametros.id ? `pratos/${parametros.id}/` : "pratos/",
+        method: parametros.id ? "PUT" : "POST",
         headers: {
           "Content-Type": "multipart/form-data",
         },
