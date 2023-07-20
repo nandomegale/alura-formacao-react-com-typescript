@@ -1,11 +1,11 @@
 import Kalend, { CalendarEvent, CalendarView, OnEventDragFinish } from "kalend";
 import "kalend/dist/styles/index.css";
 import React from "react";
-import { listaDeEventosState } from "../../state/atom";
 import useAtualizarEvento from "../../state/hooks/useAtualizarEvento";
+import useListarEventos from "../../state/hooks/useListarEventos";
 import style from "./Calendario.module.scss";
 import ptBR from "./localizacao/ptBR.json";
-import useListarEventos from "../../state/hooks/useListarEventos";
+import { IEvento } from "../../interfaces/IEvento";
 
 interface IKalendEvento {
   id?: number;
@@ -39,19 +39,14 @@ const Calendario: React.FC = () => {
     kalandEventoInalterado: CalendarEvent,
     kalendEventoAtualizado: CalendarEvent
   ) => {
-    const evento = eventos.find(
-      (evento) => evento.descricao === kalendEventoAtualizado.summary
-    );
+    const evento = {
+      id: kalendEventoAtualizado.id,
+      descricao: kalendEventoAtualizado.summary,
+      inicio: new Date(kalendEventoAtualizado.startAt),
+      fim: new Date(kalendEventoAtualizado.endAt),
+    } as IEvento;
 
-    if (evento) {
-      const eventoAtualizado = {
-        ...evento,
-      };
-
-      eventoAtualizado.inicio = new Date(kalendEventoAtualizado.startAt);
-      eventoAtualizado.fim = new Date(kalendEventoAtualizado.endAt);
-      atualizarEvento(eventoAtualizado);
-    }
+    atualizarEvento(evento);
   };
 
   return (
