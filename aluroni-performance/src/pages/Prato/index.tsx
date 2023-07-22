@@ -1,9 +1,8 @@
 import styles from "./Prato.module.scss";
 //import { useLocation } from "react-router-dom";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
-import cardapio from "data/cardapio.json";
 import TagsPrato from "components/TagsPrato";
-import NotFound from "pages/NotFound";
+import cardapio from "data/cardapio.json";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 export default function Prato() {
   //const { state } = useLocation();
@@ -12,10 +11,7 @@ export default function Prato() {
   const navigate = useNavigate();
   const prato = cardapio.find((item) => item.id === Number(id));
   if (!prato) {
-    //NÃO ESTÁ NAVEGANDO PARA NOTFOUND PQ NÃO EXISTE
-    //UMA ROTA 'NOTFOUND' MAS SIM APRESENTANDO O COMPONENT NA TELA
-    //return <NotFound />;
-    return <Navigate to="not-found" />
+    return <Navigate to="not-found" />;
   }
   return (
     <>
